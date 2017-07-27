@@ -33,8 +33,8 @@ import java.util.function.Predicate;
  */
 public enum OperatingSystem implements Predicate<String> {
 
-    MACOS("mac"),
-    LINUX("nix", "nux") {
+    MACOS("OS X", "mac"),
+    LINUX("Linux", "nix", "nux") {
         private final String home = System.getenv().getOrDefault("HOME", System.getProperty("user.home", "~"));
         
         private final String dataHome = System.getenv().getOrDefault("XDG_DATA_HOME", home + "/.local/share");
@@ -56,19 +56,30 @@ public enum OperatingSystem implements Predicate<String> {
             return cacheHome;
         }
     },
-    WINDOWS("win"),
-    UNKNOWN;
+    WINDOWS("Windows", "win"),
+    UNKNOWN("Unknown");
 
+    private final String loveName;
     private final String[] partials;
 
-    OperatingSystem(String... partials) {
+    OperatingSystem(final String loveName, final String... partials) {
+        this.loveName = loveName;
         this.partials = partials;
     }
 
     @Override
-    public boolean test(String s) {
+    public boolean test(final String s) {
         return Arrays.stream(this.partials)
                 .anyMatch(s::contains);
+    }
+
+    /**
+     * Gets the identifier used by love to represent the operating system.
+     *
+     * @return The love name
+     */
+    public String getLoveName() {
+        return this.loveName;
     }
 
     /**
@@ -106,7 +117,7 @@ public enum OperatingSystem implements Predicate<String> {
      * @return The path to the data home, as defined by the XDG Base Directory specification.
      */
     public String getDataFolder() {
-        return getConfigFolder();
+        return this.getConfigFolder();
     }
     
     /**
@@ -120,7 +131,7 @@ public enum OperatingSystem implements Predicate<String> {
      * @return The path to the cache home, as defined by the XDG Base Directory specification.
      */
     public String getCacheFolder() {
-        return getConfigFolder();
+        return this.getConfigFolder();
     }
 
     /**
