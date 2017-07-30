@@ -27,8 +27,20 @@ package xyz.lexteam.amor;
 
 import static com.google.common.io.Resources.getResource;
 
+import org.newdawn.slick.AppGameContainer;
+import org.newdawn.slick.SlickException;
+import org.squiddev.cobalt.LuaError;
+import org.squiddev.cobalt.LuaState;
+import org.squiddev.cobalt.LuaTable;
+import org.squiddev.cobalt.compiler.CompileException;
+import org.squiddev.cobalt.compiler.LoadState;
+import org.squiddev.cobalt.lib.jse.JsePlatform;
+import org.squiddev.cobalt.lib.platform.FileResourceManipulator;
+import xyz.lexteam.amor.util.LovePlatform;
 import xyz.lexteam.amor.util.OperatingSystem;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -44,7 +56,8 @@ import java.nio.file.StandardOpenOption;
  */
 public final class AmorMain {
 
-    public static final Path NATIVES_PATH = Paths.get(OperatingSystem.getOs().getDataFolder(), "amor/natives");
+    public static final Path AMOR_PATH = Paths.get(OperatingSystem.getOs().getDataFolder(), "amor");
+    public static final Path NATIVES_PATH = AMOR_PATH.resolve("natives");
 
     public static void main(final String[] args) {
         // Since LWJGL (and therefor Slick2D transitively) has native libraries of which
@@ -60,7 +73,7 @@ public final class AmorMain {
 
         // Stage 1: Extract every native, if it has'nt been
         try {
-            extractNatives(NATIVES_PATH);
+            extractNatives();
         } catch (final IOException ex) {
             ex.printStackTrace();
             System.exit(0);
@@ -70,48 +83,81 @@ public final class AmorMain {
         System.setProperty("org.lwjgl.librarypath", NATIVES_PATH.toFile().getAbsolutePath());
 
         // Stage 3: Play games
-        // TODO: this stage
+        // - Phase 1: Read config
+        final LuaTable conf = LovePlatform.standardConfiguration();
+        if (Files.exists(Paths.get("conf.lua"))) {
+            try {
+                final LuaState confState = new LuaState(new FileResourceManipulator());
+                final LuaTable confGlobals = JsePlatform.standardGlobals(confState);
+                LoadState.load(confState, new FileInputStream(new File("conf.lua")), "conf", confGlobals).call(confState);
+                confGlobals.get(confState, "love").get(confState, "conf").checkFunction().call(confState, conf);
+            } catch (final LuaError | IOException | CompileException ex) {
+                ex.printStackTrace();
+            }
+        }
+        // - Phase 2: Read game
+        final LuaState gameState = new LuaState(new FileResourceManipulator());
+        final LuaTable gameGlobals = LovePlatform.standardGlobals(gameState, conf);
+        try {
+            LoadState.load(gameState, new FileInputStream(new File("main.lua")), "main", gameGlobals).call(gameState);
+        } catch (final LuaError | CompileException | IOException ex) {
+            ex.printStackTrace();
+        }
+        // - Phase 3: Setup game container
+        try {
+            final AppGameContainer gameContainer = new AppGameContainer(new AmorGame(gameState, gameGlobals, conf));
+            Amor.setGameContainer(gameContainer);
+            gameContainer.setDisplayMode(
+                    conf.get(gameState, "window").get(gameState, "width").checkInteger(),
+                    conf.get(gameState, "window").get(gameState, "height").checkInteger(),
+                    conf.get(gameState, "window").get(gameState, "fullscreen").checkBoolean()
+            );
+            gameContainer.start();
+        } catch (final SlickException | LuaError ex) {
+            ex.printStackTrace();
+        }
     }
 
-    private static void extractNatives(final Path nativesDir) throws IOException {
-        if (Files.notExists(nativesDir)) Files.createDirectory(nativesDir);
+    private static void extractNatives() throws IOException {
+        if (Files.notExists(AMOR_PATH)) Files.createDirectory(AMOR_PATH);
+        if (Files.notExists(NATIVES_PATH)) Files.createDirectory(NATIVES_PATH);
 
         switch (OperatingSystem.getOs()) {
             case MACOS:
                 // jinput
-                extractNative("libjinput-osx.jnilib", nativesDir);
+                extractNative("libjinput-osx.jnilib");
                 // lwjgl
-                extractNative("liblwjgl.dylib", nativesDir);
-                extractNative("openal.dylib", nativesDir);
+                extractNative("liblwjgl.dylib");
+                extractNative("openal.dylib");
                 break;
             case LINUX:
                 // jinput
-                extractNative("libjinput-linux.so", nativesDir);
-                extractNative("libjinput-linux64.so", nativesDir);
+                extractNative("libjinput-linux.so");
+                extractNative("libjinput-linux64.so");
                 // lwjgl
-                extractNative("liblwjgl.so", nativesDir);
-                extractNative("liblwjgl64.so", nativesDir);
-                extractNative("libopenal.so", nativesDir);
-                extractNative("libopenal64.so", nativesDir);
+                extractNative("liblwjgl.so");
+                extractNative("liblwjgl64.so");
+                extractNative("libopenal.so");
+                extractNative("libopenal64.so");
                 break;
             case WINDOWS:
                 // jinput
-                extractNative("jinput-dx8.dll", nativesDir);
-                extractNative("jinput-dx8_64.dll", nativesDir);
-                extractNative("jinput-raw.dll", nativesDir);
-                extractNative("jinput-raw_64.dll", nativesDir);
-                extractNative("jinput-wintab.dll", nativesDir);
+                extractNative("jinput-dx8.dll");
+                extractNative("jinput-dx8_64.dll");
+                extractNative("jinput-raw.dll");
+                extractNative("jinput-raw_64.dll");
+                extractNative("jinput-wintab.dll");
                 // lwjgl
-                extractNative("lwjgl.dll", nativesDir);
-                extractNative("lwjgl64.dll", nativesDir);
-                extractNative("OpenAL32.dll", nativesDir);
-                extractNative("OpenAL64.dll", nativesDir);
+                extractNative("lwjgl.dll");
+                extractNative("lwjgl64.dll");
+                extractNative("OpenAL32.dll");
+                extractNative("OpenAL64.dll");
                 break;
         }
     }
 
-    private static void extractNative(final String nativeFile, final Path nativesDir) throws IOException {
-        final Path path = nativesDir.resolve(nativeFile);
+    private static void extractNative(final String nativeFile) throws IOException {
+        final Path path = NATIVES_PATH.resolve(nativeFile);
         if (Files.exists(path)) return;
 
         try (final ReadableByteChannel source = Channels.newChannel(getResource(nativeFile).openConnection().getInputStream());

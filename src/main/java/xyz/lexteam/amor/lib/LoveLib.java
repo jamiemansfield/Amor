@@ -46,6 +46,12 @@ public class LoveLib implements LuaLibrary {
     private static final int    REVISION = 2;
     private static final String CODENAME = "Blue Banana";
 
+    private final LuaTable conf;
+
+    public LoveLib(final LuaTable conf) {
+        this.conf = conf;
+    }
+
     @Override
     public LuaValue add(LuaState state, LuaTable environment) {
         final LuaTable table = new LuaTable();
@@ -63,7 +69,15 @@ public class LoveLib implements LuaLibrary {
         table.rawset("getVersion", new GetVersion());
 
         // Modules
-        table.load(state, new SystemModule());
+        try {
+            final LuaValue modules = this.conf.get(state, "modules");
+            if (modules.get(state, "audio").checkBoolean()) table.load(state, new AudioModule());
+            if (modules.get(state, "graphics").checkBoolean()) table.load(state, new GraphicsModule());
+            if (modules.get(state, "system").checkBoolean()) table.load(state, new SystemModule());
+            if (modules.get(state, "window").checkBoolean()) table.load(state, new WindowModule());
+        } catch (final LuaError ex) {
+            ex.printStackTrace();
+        }
 
         environment.rawset("love", table);
         state.loadedPackages.rawset("love", table);
