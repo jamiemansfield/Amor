@@ -25,6 +25,7 @@
 
 package xyz.lexteam.amor.lib;
 
+import org.squiddev.cobalt.Constants;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
@@ -54,7 +55,7 @@ public class GraphicsModule implements LuaLibrary {
         @Override
         public LuaValue call(final LuaState state) throws LuaError {
             // TODO: Implement
-            return null;
+            return Constants.NIL;
         }
 
     }

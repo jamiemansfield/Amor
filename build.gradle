@@ -16,6 +16,10 @@ targetCompatibility = '1.8'
 group = 'xyz.lexteam'
 version = '0.0.1-indev'
 
+ext {
+    gdxVersion = '1.9.2'
+}
+
 repositories {
     mavenCentral()
     maven {
@@ -29,7 +33,9 @@ dependencies {
     compile 'com.google.guava:guava:22.0'
     // Game Engine
     compile 'org.squiddev:Cobalt:0.2.4'
-    compile 'org.slick2d:slick2d-core:1.0.2'
+    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 }
 
 processResources {

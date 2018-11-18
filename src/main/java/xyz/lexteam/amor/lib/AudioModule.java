@@ -32,7 +32,6 @@ import org.squiddev.cobalt.LuaValue;
 import org.squiddev.cobalt.function.LibFunction;
 import org.squiddev.cobalt.function.TwoArgFunction;
 import org.squiddev.cobalt.lib.LuaLibrary;
-import xyz.lexteam.amor.audio.AudioSource;
 import xyz.lexteam.amor.audio.SourceType;
 
 /**
@@ -51,12 +50,12 @@ public class AudioModule implements LuaLibrary {
         return table;
     }
 
-    public static final class NewSource extends TwoArgFunction {
+    private static final class NewSource extends TwoArgFunction {
 
         @Override
         public LuaValue call(LuaState state, LuaValue arg1, LuaValue arg2) throws LuaError {
             final SourceType type = SourceType.from(arg2.checkString());
-            return new AudioSource(type).createTable();
+            return type.create(arg1.checkString()).createTable();
         }
 
     }

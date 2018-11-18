@@ -25,6 +25,7 @@
 
 package xyz.lexteam.amor.lib;
 
+import com.badlogic.gdx.Gdx;
 import org.squiddev.cobalt.Constants;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
@@ -35,7 +36,6 @@ import org.squiddev.cobalt.function.LibFunction;
 import org.squiddev.cobalt.function.OneArgFunction;
 import org.squiddev.cobalt.function.ZeroArgFunction;
 import org.squiddev.cobalt.lib.LuaLibrary;
-import xyz.lexteam.amor.Amor;
 
 /**
  * A subclass of {@link LibFunction} used to implement the window module.
@@ -56,38 +56,39 @@ public class WindowModule implements LuaLibrary {
         return table;
     }
 
-    public static final class GetHeight extends ZeroArgFunction {
+    private static final class GetHeight extends ZeroArgFunction {
 
         @Override
         public LuaValue call(LuaState state) throws LuaError {
-            return ValueFactory.valueOf(Amor.getGameContainer().getHeight());
+            return ValueFactory.valueOf(Gdx.graphics.getHeight());
         }
 
     }
 
-    public static final class GetTitle extends ZeroArgFunction {
+    private static final class GetTitle extends ZeroArgFunction {
 
         @Override
         public LuaValue call(LuaState state) throws LuaError {
-            return ValueFactory.valueOf(Amor.getGame().getTitle());
+            // TODO: Implement
+            return Constants.NIL;
         }
 
     }
 
-    public static final class GetWidth extends ZeroArgFunction {
+    private static final class GetWidth extends ZeroArgFunction {
 
         @Override
         public LuaValue call(LuaState state) throws LuaError {
-            return ValueFactory.valueOf(Amor.getGameContainer().getWidth());
+            return ValueFactory.valueOf(Gdx.graphics.getWidth());
         }
 
     }
 
-    public static final class SetTitle extends OneArgFunction {
+    private static final class SetTitle extends OneArgFunction {
 
         @Override
         public LuaValue call(LuaState state, LuaValue arg) throws LuaError {
-            Amor.getGame().setTitle(arg.checkString());
+            Gdx.graphics.setTitle(arg.checkString());
             return Constants.NIL;
         }
 

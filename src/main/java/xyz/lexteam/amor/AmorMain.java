@@ -27,8 +27,8 @@ package xyz.lexteam.amor;
 
 import static com.google.common.io.Resources.getResource;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.SlickException;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
@@ -97,6 +97,7 @@ public final class AmorMain {
                 ex.printStackTrace();
             }
         }
+
         // - Phase 2: Read game
         final LuaState gameState = new LuaState(new FileResourceManipulator());
         final LuaTable gameGlobals = LovePlatform.standardGlobals(gameState, conf);
@@ -105,18 +106,19 @@ public final class AmorMain {
         } catch (final LuaError | CompileException | IOException ex) {
             ex.printStackTrace();
         }
+
         // - Phase 3: Setup game container
         try {
-            final AppGameContainer gameContainer = new AppGameContainer(new AmorGame(gameState, gameGlobals, conf));
-            Amor.setGameContainer(gameContainer);
-            gameContainer.setDisplayMode(
-                    conf.get(gameState, "window").get(gameState, "width").checkInteger(),
-                    conf.get(gameState, "window").get(gameState, "height").checkInteger(),
-                    conf.get(gameState, "window").get(gameState, "fullscreen").checkBoolean()
-            );
-            gameContainer.start();
-        } catch (final SlickException | LuaError ex) {
-            ex.printStackTrace();
+            final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+            config.title = conf.get(gameState, "window").get(gameState, "title").checkString();
+            config.width = conf.get(gameState, "window").get(gameState, "width").checkInteger();
+            config.height = conf.get(gameState, "window").get(gameState, "height").checkInteger();
+            config.fullscreen = conf.get(gameState, "window").get(gameState, "fullscreen").checkBoolean();
+            config.resizable = conf.get(gameState, "window").get(gameState, "resizable").checkBoolean();
+            new LwjglApplication(new AmorGame(gameState, gameGlobals, conf), config);
+        }
+        catch (LuaError luaError) {
+            luaError.printStackTrace();
         }
     }
 

@@ -25,32 +25,25 @@
 
 package xyz.lexteam.amor;
 
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SlickException;
+import com.badlogic.gdx.ApplicationAdapter;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
 
-public class AmorGame extends BasicGame {
+public class AmorGame extends ApplicationAdapter {
 
     private final LuaState gameState;
     private final LuaTable gameGlobals;
     private final LuaTable conf;
 
-    private String amorTitle;
-
     public AmorGame(final LuaState gameState, final LuaTable gameGlobals, final LuaTable conf) throws LuaError {
-        super(null);
-        this.amorTitle = conf.get(gameState, "window").get(gameState, "title").checkString();
         this.gameState = gameState;
         this.gameGlobals = gameGlobals;
         this.conf = conf;
     }
 
     @Override
-    public void init(GameContainer container) throws SlickException {
+    public void create() {
         try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "load").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
@@ -59,30 +52,18 @@ public class AmorGame extends BasicGame {
     }
 
     @Override
-    public void update(GameContainer container, int delta) throws SlickException {
+    public void render() {
         /*try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "update").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
             ex.printStackTrace();
         }*/
-    }
 
-    @Override
-    public void render(GameContainer container, Graphics g) throws SlickException {
         /*try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "draw").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
             ex.printStackTrace();
         }*/
-    }
-
-    @Override
-    public String getTitle() {
-        return this.amorTitle;
-    }
-
-    public void setTitle(final String title) {
-        this.amorTitle = title;
     }
 
 }

@@ -23,41 +23,26 @@
  * THE SOFTWARE.
  */
 
-package xyz.lexteam.amor;
+package xyz.lexteam.amor.audio;
 
-import org.newdawn.slick.AppGameContainer;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 
 /**
- * The 'brains of the operation'.
+ * An implementation of {@link AudioSource} for stream sources.
  */
-public final class Amor {
+public class StreamAudioSource extends AudioSource {
 
-    private static AppGameContainer gameContainer;
-    private static AmorGame         game;
+    private final Music music;
 
-    public static AppGameContainer getGameContainer() {
-        return Amor.gameContainer;
+    public StreamAudioSource(final String fileName) {
+        super(SourceType.STREAM);
+        this.music = Gdx.audio.newMusic(Gdx.files.local(fileName));
     }
 
-    public static void setGameContainer(final AppGameContainer gameContainer) {
-        if (Amor.gameContainer != null) {
-            throw new RuntimeException("The gameContainer has already been set!");
-        }
-        Amor.gameContainer = gameContainer;
-    }
-
-    public static AmorGame getGame() {
-        return Amor.game;
-    }
-
-    public static void setGame(final AmorGame game) {
-        if (Amor.game != null) {
-            throw new RuntimeException("The game has already been set!");
-        }
-        Amor.game = game;
-    }
-
-    private Amor() {
+    @Override
+    public void play() {
+        this.music.play();
     }
 
 }

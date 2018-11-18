@@ -25,52 +25,24 @@
 
 package xyz.lexteam.amor.audio;
 
-import java.util.Objects;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 
 /**
- * Represents the source type of some audio.
- *
- * @see <a href="https://love2d.org/wiki/SourceType">SourceType</a>
+ * An implementation of {@link AudioSource} for static sources.
  */
-public enum SourceType {
+public class StaticAudioSource extends AudioSource {
 
-    STATIC("static") {
-        @Override
-        public AudioSource create(final String fileName) {
-            return new StaticAudioSource(fileName);
-        }
-    },
-    STREAM("stream") {
-        @Override
-        public AudioSource create(final String fileName) {
-            return new StreamAudioSource(fileName);
-        }
-    },
-    QUEUE("queue") {
-        @Override
-        public AudioSource create(final String fileName) {
-            return null;
-        }
-    },
-    ;
+    private final Sound sound;
 
-    private final String loveName;
-
-    SourceType(final String loveName) {
-        this.loveName = loveName;
+    public StaticAudioSource(final String fileName) {
+        super(SourceType.STATIC);
+        this.sound = Gdx.audio.newSound(Gdx.files.local(fileName));
     }
 
-    public String getLoveName() {
-        return this.loveName;
-    }
-
-    public abstract AudioSource create(final String fileName);
-
-    public static SourceType from(final String loveName) {
-        for (final SourceType type : values()) {
-            if (Objects.equals(type.loveName, loveName)) return type;
-        }
-        throw new IllegalArgumentException(loveName + " is an invalid source type!");
+    @Override
+    public void play() {
+        this.sound.play();
     }
 
 }

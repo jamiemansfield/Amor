@@ -63,7 +63,7 @@ public class SystemModule implements LuaLibrary {
         return table;
     }
 
-    public static final class GetClipboardText extends ZeroArgFunction {
+    private static final class GetClipboardText extends ZeroArgFunction {
 
         @Override
         public LuaValue call(LuaState state) throws LuaError {
@@ -72,7 +72,7 @@ public class SystemModule implements LuaLibrary {
 
     }
 
-    public static final class GetOS extends ZeroArgFunction {
+    private static final class GetOS extends ZeroArgFunction {
 
         @Override
         public LuaValue call(LuaState state) throws LuaError {
@@ -81,7 +81,7 @@ public class SystemModule implements LuaLibrary {
 
     }
 
-    public static final class GetProcessorCount extends ZeroArgFunction {
+    private static final class GetProcessorCount extends ZeroArgFunction {
 
         @Override
         public LuaValue call(LuaState state) throws LuaError {
@@ -90,7 +90,7 @@ public class SystemModule implements LuaLibrary {
 
     }
 
-    public static final class OpenURL extends OneArgFunction {
+    private static final class OpenURL extends OneArgFunction {
 
         @Override
         public LuaValue call(LuaState state, LuaValue arg) throws LuaError {
@@ -107,7 +107,7 @@ public class SystemModule implements LuaLibrary {
 
     }
 
-    public static final class SetClipboardText extends OneArgFunction {
+    private static final class SetClipboardText extends OneArgFunction {
 
         @Override
         public LuaValue call(LuaState state, LuaValue arg) throws LuaError {

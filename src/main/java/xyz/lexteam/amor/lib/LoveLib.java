@@ -84,7 +84,7 @@ public class LoveLib implements LuaLibrary {
         return table;
     }
 
-    public static final class GetVersion extends VarArgFunction {
+    private static final class GetVersion extends VarArgFunction {
 
         @Override
         public Varargs invoke(LuaState state, Varargs args) throws LuaError {
