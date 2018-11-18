@@ -23,32 +23,42 @@
  * THE SOFTWARE.
  */
 
-package xyz.lexteam.amor.audio;
+package xyz.lexteam.amor.lib;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
+import org.squiddev.cobalt.LuaError;
+import org.squiddev.cobalt.LuaState;
+import org.squiddev.cobalt.LuaTable;
+import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.ValueFactory;
+import org.squiddev.cobalt.function.LibFunction;
+import org.squiddev.cobalt.function.OneArgFunction;
+import org.squiddev.cobalt.lib.LuaLibrary;
+import xyz.lexteam.amor.keyboard.Keys;
 
 /**
- * An implementation of {@link AudioSource} for static sources.
+ * A subclass of {@link LibFunction} used to implement the keyboard module.
  */
-public class StaticAudioSource extends AudioSource {
-
-    private final Sound sound;
-
-    public StaticAudioSource(final String fileName) {
-        super(SourceType.STATIC);
-        this.sound = Gdx.audio.newSound(Gdx.files.local(fileName));
-    }
+public class KeyboardModule implements LuaLibrary {
 
     @Override
-    public void play() {
-        this.sound.play();
+    public LuaValue add(LuaState state, LuaTable environment) {
+        final LuaTable table = new LuaTable();
+
+        // Functions
+        table.rawset("isDown", new IsDown());
+
+        environment.rawset("keyboard", table);
+        return table;
     }
 
-    @Override
-    public boolean isStopped() {
-        // TODO: ?
-        return true;
+    private static final class IsDown extends OneArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
+            return ValueFactory.valueOf(Gdx.input.isKeyPressed(Keys.of(arg.checkString())));
+        }
+
     }
 
 }

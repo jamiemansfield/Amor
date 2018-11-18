@@ -75,6 +75,7 @@ public class LoveLib implements LuaLibrary {
             if (modules.get(state, "graphics").checkBoolean()) table.load(state, new GraphicsModule());
             if (modules.get(state, "system").checkBoolean()) table.load(state, new SystemModule());
             if (modules.get(state, "window").checkBoolean()) table.load(state, new WindowModule());
+            if (modules.get(state, "keyboard").checkBoolean()) table.load(state, new KeyboardModule());
         } catch (final LuaError ex) {
             ex.printStackTrace();
         }

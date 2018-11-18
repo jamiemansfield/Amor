@@ -25,19 +25,32 @@
 
 package xyz.lexteam.amor.lib;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import org.squiddev.cobalt.Constants;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
 import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.ValueFactory;
+import org.squiddev.cobalt.Varargs;
 import org.squiddev.cobalt.function.LibFunction;
+import org.squiddev.cobalt.function.OneArgFunction;
+import org.squiddev.cobalt.function.ThreeArgFunction;
+import org.squiddev.cobalt.function.VarArgFunction;
 import org.squiddev.cobalt.function.ZeroArgFunction;
 import org.squiddev.cobalt.lib.LuaLibrary;
+import xyz.lexteam.amor.AmorGame;
+import xyz.lexteam.amor.graphics.Image;
 
 /**
  * A subclass of {@link LibFunction} used to implement the graphics module.
  */
 public class GraphicsModule implements LuaLibrary {
+
+    private Color color = Color.BLACK;
 
     @Override
     public LuaValue add(LuaState state, LuaTable environment) {
@@ -45,6 +58,14 @@ public class GraphicsModule implements LuaLibrary {
 
         // Functions
         table.rawset("reset", new Reset());
+        table.rawset("newImage", new NewImage());
+        table.rawset("getWidth", new GetWidth());
+        table.rawset("getHeight", new GetHeight());
+        table.rawset("setBackgroundColor", new SetBackgroundColour());
+        table.rawset("draw", new Draw());
+        table.rawset("print", new Print());
+        table.rawset("setColor", new SetColor());
+        table.rawset("circle", new Circle());
 
         environment.rawset("graphics", table);
         return table;
@@ -55,6 +76,92 @@ public class GraphicsModule implements LuaLibrary {
         @Override
         public LuaValue call(final LuaState state) throws LuaError {
             // TODO: Implement
+            return Constants.NIL;
+        }
+
+    }
+
+    private static class NewImage extends OneArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
+            return new Image(arg.checkString()).createTable();
+        }
+
+    }
+
+    private static final class GetWidth extends ZeroArgFunction {
+
+        @Override
+        public LuaValue call(LuaState state) throws LuaError {
+            return ValueFactory.valueOf(Gdx.graphics.getWidth());
+        }
+
+    }
+
+    private static final class GetHeight extends ZeroArgFunction {
+
+        @Override
+        public LuaValue call(LuaState state) throws LuaError {
+            return ValueFactory.valueOf(Gdx.graphics.getHeight());
+        }
+
+    }
+
+    private static class SetBackgroundColour extends ThreeArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
+            Gdx.gl.glClearColor((float) arg1.checkDouble() / 255f, (float) arg2.checkDouble() / 255f, (float) arg3.checkDouble() / 255f, 1);
+            return Constants.NIL;
+        }
+
+    }
+
+    private static class Draw extends OneArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
+            return arg.checkTable().rawget("_draw").checkFunction()
+                    .call(state, ValueFactory.valueOf(0), ValueFactory.valueOf(0));
+        }
+
+    }
+
+    private static class Print extends ThreeArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
+            AmorGame.FONT.draw(AmorGame.BATCH, arg1.checkString(), arg2.checkInteger(), arg3.checkInteger());
+            return Constants.NIL;
+        }
+
+    }
+
+    private class SetColor extends ThreeArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
+            GraphicsModule.this.color = new Color(arg1.checkInteger(), arg2.checkInteger(), arg3.checkInteger(), 1);
+            return Constants.NIL;
+        }
+
+    }
+
+    private class Circle extends VarArgFunction {
+
+        @Override
+        public Varargs invoke(final LuaState state, final Varargs args) throws LuaError {
+            final int x = args.arg(2).checkInteger();
+            final int y = args.arg(3).checkInteger();
+            final int radius = args.arg(4).checkInteger();
+            final int diameter = 2 * radius;
+
+            final Pixmap pixmap = new Pixmap(diameter, diameter, Pixmap.Format.RGBA8888);
+            pixmap.setColor(GraphicsModule.this.color);
+            pixmap.fillCircle(radius, radius, radius);
+
+            AmorGame.BATCH.draw(new Texture(pixmap), x, y);
             return Constants.NIL;
         }
 

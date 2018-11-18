@@ -26,9 +26,12 @@
 package xyz.lexteam.amor.util;
 
 import org.squiddev.cobalt.Constants;
+import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
+import org.squiddev.cobalt.LuaValue;
 import org.squiddev.cobalt.ValueFactory;
+import org.squiddev.cobalt.function.ZeroArgFunction;
 import org.squiddev.cobalt.lib.jse.JsePlatform;
 import xyz.lexteam.amor.lib.LoveLib;
 
@@ -46,6 +49,17 @@ public final class LovePlatform {
      */
     public static LuaTable standardGlobals(final LuaState state, final LuaTable conf) {
         final LuaTable globals = JsePlatform.standardGlobals(state);
+        try {
+            globals.rawget("os").checkTable().rawset("time", new ZeroArgFunction() {
+                @Override
+                public LuaValue call(final LuaState state) throws LuaError {
+                    return ValueFactory.valueOf(System.currentTimeMillis() / 1000);
+                }
+            });
+        }
+        catch (final LuaError ex) {
+            ex.printStackTrace();
+        }
         globals.load(state, new LoveLib(conf));
         return globals;
     }

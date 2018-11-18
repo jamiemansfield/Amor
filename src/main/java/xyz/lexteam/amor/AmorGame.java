@@ -26,11 +26,18 @@
 package xyz.lexteam.amor;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
 
 public class AmorGame extends ApplicationAdapter {
+
+    public static SpriteBatch BATCH;
+    public static BitmapFont FONT;
 
     private final LuaState gameState;
     private final LuaTable gameGlobals;
@@ -44,6 +51,8 @@ public class AmorGame extends ApplicationAdapter {
 
     @Override
     public void create() {
+        BATCH = new SpriteBatch();
+        FONT = new BitmapFont();
         try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "load").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
@@ -53,17 +62,27 @@ public class AmorGame extends ApplicationAdapter {
 
     @Override
     public void render() {
-        /*try {
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        BATCH.begin();
+
+        try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "update").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
             ex.printStackTrace();
-        }*/
+        }
 
-        /*try {
+        try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "draw").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
             ex.printStackTrace();
-        }*/
+        }
+
+        BATCH.end();
+    }
+
+    @Override
+    public void dispose() {
+        BATCH.dispose();
     }
 
 }

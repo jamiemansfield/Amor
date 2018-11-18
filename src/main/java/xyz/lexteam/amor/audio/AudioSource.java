@@ -46,12 +46,15 @@ public abstract class AudioSource {
 
     public abstract void play();
 
+    public abstract boolean isStopped();
+
     public LuaTable createTable() {
         final LuaTable table = new LuaTable();
 
         // Functions
         table.rawset("getType", new GetType());
         table.rawset("play", new Play());
+        table.rawset("isStopped", new IsStopped());
 
         return table;
     }
@@ -71,6 +74,15 @@ public abstract class AudioSource {
         public LuaValue call(final LuaState state) throws LuaError {
             AudioSource.this.play();
             return Constants.NIL;
+        }
+
+    }
+
+    private class IsStopped extends ZeroArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state) throws LuaError {
+            return ValueFactory.valueOf(AudioSource.this.isStopped());
         }
 
     }

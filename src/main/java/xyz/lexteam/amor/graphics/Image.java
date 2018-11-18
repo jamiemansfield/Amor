@@ -23,32 +23,48 @@
  * THE SOFTWARE.
  */
 
-package xyz.lexteam.amor.audio;
+package xyz.lexteam.amor.graphics;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Texture;
+import org.squiddev.cobalt.Constants;
+import org.squiddev.cobalt.LuaError;
+import org.squiddev.cobalt.LuaState;
+import org.squiddev.cobalt.LuaTable;
+import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.function.TwoArgFunction;
+import xyz.lexteam.amor.AmorGame;
 
 /**
- * An implementation of {@link AudioSource} for static sources.
+ * An image.
+ *
+ * @see <a href="https://love2d.org/wiki/Image">Image</a>
  */
-public class StaticAudioSource extends AudioSource {
+public class Image {
 
-    private final Sound sound;
+    private final Texture texture;
 
-    public StaticAudioSource(final String fileName) {
-        super(SourceType.STATIC);
-        this.sound = Gdx.audio.newSound(Gdx.files.local(fileName));
+    public Image(final String fileName) {
+        this.texture = new Texture(Gdx.files.local(fileName));
     }
 
-    @Override
-    public void play() {
-        this.sound.play();
+    public LuaTable createTable() {
+        final LuaTable table = new LuaTable();
+
+        // Internal Functions
+        table.rawset("_draw", new Draw());
+
+        return table;
     }
 
-    @Override
-    public boolean isStopped() {
-        // TODO: ?
-        return true;
+    private class Draw extends TwoArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2) throws LuaError {
+            AmorGame.BATCH.draw(Image.this.texture, arg1.checkInteger(), arg2.checkInteger());
+            return Constants.NIL;
+        }
+
     }
 
 }
