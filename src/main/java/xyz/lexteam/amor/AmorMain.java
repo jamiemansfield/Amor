@@ -81,6 +81,7 @@ public final class AmorMain {
 
         // Stage 2: Set the library path to the correct directory
         System.setProperty("org.lwjgl.librarypath", NATIVES_PATH.toFile().getAbsolutePath());
+        System.setProperty("net.java.games.input.librarypath", NATIVES_PATH.toFile().getAbsolutePath());
 
         // Stage 3: Play games
         // - Phase 1: Read config
@@ -89,6 +90,7 @@ public final class AmorMain {
             try {
                 final LuaState confState = new LuaState(new FileResourceManipulator());
                 final LuaTable confGlobals = JsePlatform.standardGlobals(confState);
+                confGlobals.rawset("love", new LuaTable());
                 LoadState.load(confState, new FileInputStream(new File("conf.lua")), "conf", confGlobals).call(confState);
                 confGlobals.get(confState, "love").get(confState, "conf").checkFunction().call(confState, conf);
             } catch (final LuaError | IOException | CompileException ex) {

@@ -23,42 +23,37 @@
  * THE SOFTWARE.
  */
 
-package xyz.lexteam.amor.lib;
+package xyz.lexteam.amor.audio;
 
-import org.squiddev.cobalt.LuaError;
-import org.squiddev.cobalt.LuaState;
-import org.squiddev.cobalt.LuaTable;
-import org.squiddev.cobalt.LuaValue;
-import org.squiddev.cobalt.function.LibFunction;
-import org.squiddev.cobalt.function.TwoArgFunction;
-import org.squiddev.cobalt.lib.LuaLibrary;
-import xyz.lexteam.amor.audio.AudioSource;
-import xyz.lexteam.amor.audio.SourceType;
+import java.util.Objects;
 
 /**
- * A subclass of {@link LibFunction} used to implement the audio module.
+ * Represents the source type of some audio.
+ *
+ * @see <a href="https://love2d.org/wiki/SourceType">SourceType</a>
  */
-public class AudioModule implements LuaLibrary {
+public enum SourceType {
 
-    @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
-        final LuaTable table = new LuaTable();
+    STATIC("static"),
+    STREAM("stream"),
+    QUEUE("queue"),
+    ;
 
-        // Functions
-        table.rawset("newSource", new NewSource());
+    private final String loveName;
 
-        environment.rawset("audio", table);
-        return table;
+    SourceType(final String loveName) {
+        this.loveName = loveName;
     }
 
-    public static final class NewSource extends TwoArgFunction {
+    public String getLoveName() {
+        return this.loveName;
+    }
 
-        @Override
-        public LuaValue call(LuaState state, LuaValue arg1, LuaValue arg2) throws LuaError {
-            final SourceType type = SourceType.from(arg2.checkString());
-            return new AudioSource(type).createTable();
+    public static SourceType from(final String loveName) {
+        for (final SourceType type : values()) {
+            if (Objects.equals(type.loveName, loveName)) return type;
         }
-
+        throw new IllegalArgumentException(loveName + " is an invalid source type!");
     }
 
 }

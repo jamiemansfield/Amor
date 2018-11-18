@@ -25,10 +25,12 @@
 
 package xyz.lexteam.amor.lib;
 
+import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
 import org.squiddev.cobalt.LuaValue;
 import org.squiddev.cobalt.function.LibFunction;
+import org.squiddev.cobalt.function.ZeroArgFunction;
 import org.squiddev.cobalt.lib.LuaLibrary;
 
 /**
@@ -40,8 +42,21 @@ public class GraphicsModule implements LuaLibrary {
     public LuaValue add(LuaState state, LuaTable environment) {
         final LuaTable table = new LuaTable();
 
+        // Functions
+        table.rawset("reset", new Reset());
+
         environment.rawset("graphics", table);
         return table;
+    }
+
+    private static class Reset extends ZeroArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state) throws LuaError {
+            // TODO: Implement
+            return null;
+        }
+
     }
 
 }

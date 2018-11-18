@@ -25,9 +25,40 @@
 
 package xyz.lexteam.amor.audio;
 
+import org.squiddev.cobalt.LuaError;
+import org.squiddev.cobalt.LuaState;
+import org.squiddev.cobalt.LuaTable;
+import org.squiddev.cobalt.LuaValue;
+import org.squiddev.cobalt.ValueFactory;
+import org.squiddev.cobalt.function.ZeroArgFunction;
+
 /**
  * Represents an audio source.
  */
 public class AudioSource {
+
+    private final SourceType type;
+
+    public AudioSource(final SourceType type) {
+        this.type = type;
+    }
+
+    public LuaTable createTable() {
+        final LuaTable table = new LuaTable();
+
+        // Functions
+        table.rawset("getType", new GetType());
+
+        return table;
+    }
+
+    private class GetType extends ZeroArgFunction {
+
+        @Override
+        public LuaValue call(final LuaState state) throws LuaError {
+            return ValueFactory.valueOf(AudioSource.this.type.getLoveName());
+        }
+
+    }
 
 }
