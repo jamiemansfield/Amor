@@ -52,7 +52,11 @@ public class AmorGame extends ApplicationAdapter {
     @Override
     public void create() {
         BATCH = new SpriteBatch();
-        FONT = new BitmapFont();
+        FONT = new BitmapFont(
+                Gdx.files.classpath("assets/amor/font/hack.fnt"),
+                Gdx.files.classpath("assets/amor/font/hack.png"),
+                false
+        );
         try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "load").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {
@@ -83,6 +87,7 @@ public class AmorGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         BATCH.dispose();
+        FONT.dispose();
     }
 
 }

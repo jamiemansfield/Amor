@@ -128,10 +128,11 @@ public class GraphicsModule implements LuaLibrary {
 
     }
 
-    private static class Print extends ThreeArgFunction {
+    private class Print extends ThreeArgFunction {
 
         @Override
         public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
+            AmorGame.FONT.setColor(GraphicsModule.this.color);
             AmorGame.FONT.draw(AmorGame.BATCH, arg1.checkString(), arg2.checkInteger(), arg3.checkInteger());
             return Constants.NIL;
         }
