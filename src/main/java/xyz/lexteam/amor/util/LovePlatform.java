@@ -25,12 +25,12 @@
 
 package xyz.lexteam.amor.util;
 
-import org.squiddev.cobalt.Constants;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
 import org.squiddev.cobalt.LuaValue;
 import org.squiddev.cobalt.ValueFactory;
+import org.squiddev.cobalt.function.OneArgFunction;
 import org.squiddev.cobalt.function.ZeroArgFunction;
 import org.squiddev.cobalt.lib.jse.JsePlatform;
 import xyz.lexteam.amor.lib.LoveLib;
@@ -44,10 +44,9 @@ public final class LovePlatform {
      * Creates a standard globals table for Amor.
      *
      * @param state The lua state
-     * @param conf The Amor configuration
      * @return The globals table
      */
-    public static LuaTable standardGlobals(final LuaState state, final LuaTable conf) {
+    public static LuaTable standardGlobals(final LuaState state) {
         final LuaTable globals = JsePlatform.standardGlobals(state);
         try {
             globals.rawget("os").checkTable().rawset("time", new ZeroArgFunction() {
@@ -56,68 +55,20 @@ public final class LovePlatform {
                     return ValueFactory.valueOf(System.currentTimeMillis() / 1000);
                 }
             });
+            globals.rawset("_requireModule", new OneArgFunction() {
+                @Override
+                public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
+                    final LuaValue val = state.loadedPackages.rawget("love." + arg.checkString());
+                    globals.rawget("love").checkTable().rawset(arg.checkString(), val);
+                    return val;
+                }
+            });
         }
         catch (final LuaError ex) {
             ex.printStackTrace();
         }
-        globals.load(state, new LoveLib(conf));
+        globals.load(state, new LoveLib());
         return globals;
-    }
-
-    /**
-     * Creates a table containing the standard configuration
-     * for Amor.
-     *
-     * @return The standard configuration
-     */
-    public static LuaTable standardConfiguration() {
-        final LuaTable conf = new LuaTable();
-        conf.rawset("identity", Constants.NIL);
-        conf.rawset("version", ValueFactory.valueOf("0.10.2"));
-        conf.rawset("console", ValueFactory.valueOf(false));
-        conf.rawset("accelerometerjoystick", ValueFactory.valueOf(false));
-        conf.rawset("externalstorage", ValueFactory.valueOf(false));
-        conf.rawset("gammacorrect", ValueFactory.valueOf(false));
-
-        final LuaTable windowConf = new LuaTable();
-        windowConf.rawset("title", ValueFactory.valueOf("Untitled"));
-        windowConf.rawset("icon", Constants.NIL);
-        windowConf.rawset("width", ValueFactory.valueOf(800));
-        windowConf.rawset("height", ValueFactory.valueOf(600));
-        windowConf.rawset("borderless", ValueFactory.valueOf(false));
-        windowConf.rawset("resizable", ValueFactory.valueOf(false));
-        windowConf.rawset("minwidth", ValueFactory.valueOf(1));
-        windowConf.rawset("minheight", ValueFactory.valueOf(1));
-        windowConf.rawset("fullscreen", ValueFactory.valueOf(false));
-        windowConf.rawset("fullscreentype", ValueFactory.valueOf("desktop"));
-        windowConf.rawset("vsync", ValueFactory.valueOf(true));
-        windowConf.rawset("msaa", ValueFactory.valueOf(0));
-        windowConf.rawset("display", ValueFactory.valueOf(1));
-        windowConf.rawset("highdpi", ValueFactory.valueOf(false));
-        windowConf.rawset("x", Constants.NIL);
-        windowConf.rawset("y", Constants.NIL);
-        conf.rawset("window", windowConf);
-
-        final LuaTable modulesConf = new LuaTable();
-        modulesConf.rawset("audio", ValueFactory.valueOf(true));
-        modulesConf.rawset("event", ValueFactory.valueOf(true));
-        modulesConf.rawset("graphics", ValueFactory.valueOf(true));
-        modulesConf.rawset("image", ValueFactory.valueOf(true));
-        modulesConf.rawset("joystick", ValueFactory.valueOf(true));
-        modulesConf.rawset("keyboard", ValueFactory.valueOf(true));
-        modulesConf.rawset("math", ValueFactory.valueOf(true));
-        modulesConf.rawset("mouse", ValueFactory.valueOf(true));
-        modulesConf.rawset("physics", ValueFactory.valueOf(true));
-        modulesConf.rawset("sound", ValueFactory.valueOf(true));
-        modulesConf.rawset("system", ValueFactory.valueOf(true));
-        modulesConf.rawset("timer", ValueFactory.valueOf(true));
-        modulesConf.rawset("touch", ValueFactory.valueOf(true));
-        modulesConf.rawset("video", ValueFactory.valueOf(true));
-        modulesConf.rawset("window", ValueFactory.valueOf(true));
-        modulesConf.rawset("thread", ValueFactory.valueOf(true));
-        conf.rawset("modules", modulesConf);
-
-        return conf;
     }
 
     private LovePlatform() {

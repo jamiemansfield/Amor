@@ -59,7 +59,7 @@ public class SystemModule implements LuaLibrary {
         table.rawset("setClipboardText", new SetClipboardText());
         // TODO: https://love2d.org/wiki/love.system.vibrate
 
-        environment.rawset("system", table);
+        state.loadedPackages.rawset("love.system", table);
         return table;
     }
 

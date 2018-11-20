@@ -67,7 +67,7 @@ public class GraphicsModule implements LuaLibrary {
         table.rawset("setColor", new SetColor());
         table.rawset("circle", new Circle());
 
-        environment.rawset("graphics", table);
+        state.loadedPackages.rawset("love.graphics", table);
         return table;
     }
 

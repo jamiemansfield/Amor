@@ -46,12 +46,6 @@ public class LoveLib implements LuaLibrary {
     private static final int    REVISION = 0;
     private static final String CODENAME = "Mysterious Mysteries";
 
-    private final LuaTable conf;
-
-    public LoveLib(final LuaTable conf) {
-        this.conf = conf;
-    }
-
     @Override
     public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
@@ -69,19 +63,14 @@ public class LoveLib implements LuaLibrary {
         table.rawset("getVersion", new GetVersion());
 
         // Modules
-        try {
-            final LuaValue modules = this.conf.get(state, "modules");
-            if (modules.get(state, "audio").checkBoolean()) table.load(state, new AudioModule());
-            if (modules.get(state, "graphics").checkBoolean()) table.load(state, new GraphicsModule());
-            if (modules.get(state, "system").checkBoolean()) table.load(state, new SystemModule());
-            if (modules.get(state, "window").checkBoolean()) table.load(state, new WindowModule());
-            if (modules.get(state, "keyboard").checkBoolean()) table.load(state, new KeyboardModule());
-        } catch (final LuaError ex) {
-            ex.printStackTrace();
-        }
+        table.load(state, new AudioModule());
+        table.load(state, new GraphicsModule());
+        table.load(state, new SystemModule());
+        table.load(state, new WindowModule());
+        table.load(state, new KeyboardModule());
 
-        environment.rawset("love", table);
         state.loadedPackages.rawset("love", table);
+        environment.rawset("love", table);
         return table;
     }
 

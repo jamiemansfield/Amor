@@ -40,13 +40,13 @@ import xyz.lexteam.amor.audio.SourceType;
 public class AudioModule implements LuaLibrary {
 
     @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
+    public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
 
         // Functions
         table.rawset("newSource", new NewSource());
 
-        environment.rawset("audio", table);
+        state.loadedPackages.rawset("love.audio", table);
         return table;
     }
 

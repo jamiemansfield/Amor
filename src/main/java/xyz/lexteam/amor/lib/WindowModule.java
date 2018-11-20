@@ -52,7 +52,7 @@ public class WindowModule implements LuaLibrary {
         table.rawset("getWidth", new GetWidth());
         table.rawset("setTitle", new SetTitle());
 
-        environment.rawset("window", table);
+        state.loadedPackages.rawset("love.window", table);
         return table;
     }
 

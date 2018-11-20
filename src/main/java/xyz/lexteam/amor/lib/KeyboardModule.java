@@ -48,7 +48,7 @@ public class KeyboardModule implements LuaLibrary {
         // Functions
         table.rawset("isDown", new IsDown());
 
-        environment.rawset("keyboard", table);
+        state.loadedPackages.rawset("love.keyboard", table);
         return table;
     }
 

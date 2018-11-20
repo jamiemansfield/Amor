@@ -32,15 +32,11 @@ import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
 import org.squiddev.cobalt.compiler.CompileException;
 import org.squiddev.cobalt.compiler.LoadState;
-import org.squiddev.cobalt.lib.jse.JsePlatform;
 import org.squiddev.cobalt.lib.platform.FileResourceManipulator;
 import xyz.lexteam.amor.util.LovePlatform;
 import xyz.lexteam.amor.util.OperatingSystem;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -53,39 +49,42 @@ public final class AmorMain {
     public static final Path AMOR_PATH = Paths.get(OperatingSystem.getOs().getDataFolder(), "amor");
 
     public static void main(final String[] args) {
-        // Phase 1: Read config
-        final LuaTable conf = LovePlatform.standardConfiguration();
-        if (Files.exists(Paths.get("conf.lua"))) {
-            try {
-                final LuaState confState = new LuaState(new FileResourceManipulator());
-                final LuaTable confGlobals = JsePlatform.standardGlobals(confState);
-                confGlobals.rawset("love", new LuaTable());
-                LoadState.load(confState, new FileInputStream(new File("conf.lua")), "conf", confGlobals).call(confState);
-                confGlobals.get(confState, "love").get(confState, "conf").checkFunction().call(confState, conf);
-            } catch (final LuaError | IOException | CompileException ex) {
-                ex.printStackTrace();
-            }
-        }
-
-        // Phase 2: Read game
-        final LuaState gameState = new LuaState(new FileResourceManipulator());
-        final LuaTable gameGlobals = LovePlatform.standardGlobals(gameState, conf);
+        // Run the boot script
+        final LuaState state = new LuaState(new FileResourceManipulator());
+        final LuaTable globals = LovePlatform.standardGlobals(state);
+        LuaTable amor = new LuaTable();
         try {
-            LoadState.load(gameState, new FileInputStream(new File("main.lua")), "main", gameGlobals).call(gameState);
+            amor = LoadState.load(state, AmorMain.class.getResourceAsStream("/assets/amor/boot/boot.lua"), "boot", globals).call(state).checkTable();
         } catch (final LuaError | CompileException | IOException ex) {
             ex.printStackTrace();
+            System.exit(-1);
         }
 
-        // Phase 3: Setup game container
+        try {
+            amor.get(state, "main").checkFunction().call(state);
+        }
+        catch (final LuaError luaError) {
+            luaError.printStackTrace();
+        }
+
+        LuaTable conf = new LuaTable();
+        try {
+            conf = amor.rawget("config").checkTable();
+        }
+        catch (LuaError luaError) {
+            luaError.printStackTrace();
+        }
+
+        // Setup game container
         try {
             final Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-            config.setTitle(conf.get(gameState, "window").get(gameState, "title").checkString());
+            config.setTitle(conf.get(state, "window").get(state, "title").checkString());
             config.setWindowedMode(
-                    conf.get(gameState, "window").get(gameState, "width").checkInteger(),
-                    conf.get(gameState, "window").get(gameState, "height").checkInteger()
+                    conf.get(state, "window").get(state, "width").checkInteger(),
+                    conf.get(state, "window").get(state, "height").checkInteger()
             );
-            config.setResizable(conf.get(gameState, "window").get(gameState, "resizable").checkBoolean());
-            new Lwjgl3Application(new AmorGame(gameState, gameGlobals, conf), config);
+            config.setResizable(conf.get(state, "window").get(state, "resizable").checkBoolean());
+            new Lwjgl3Application(new AmorGame(state, globals, conf), config);
         }
         catch (LuaError luaError) {
             luaError.printStackTrace();
