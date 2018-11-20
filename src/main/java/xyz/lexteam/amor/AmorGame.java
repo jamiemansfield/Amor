@@ -30,6 +30,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
@@ -52,11 +53,12 @@ public class AmorGame extends ApplicationAdapter {
     @Override
     public void create() {
         BATCH = new SpriteBatch();
-        FONT = new BitmapFont(
-                Gdx.files.classpath("assets/amor/font/hack.fnt"),
-                Gdx.files.classpath("assets/amor/font/hack.png"),
-                false
-        );
+        final FreeTypeFontGenerator gen = new FreeTypeFontGenerator(Gdx.files.classpath("assets/amor/font/Vera.ttf"));
+        FONT = gen.generateFont(new FreeTypeFontGenerator.FreeTypeFontParameter() {{
+            this.size = 12;
+        }
+        });
+        gen.dispose();
         try {
             this.gameGlobals.get(this.gameState, "love").get(this.gameState, "load").checkFunction().call(this.gameState);
         } catch (final LuaError ex) {

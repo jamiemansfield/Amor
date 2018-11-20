@@ -47,7 +47,7 @@ import java.net.URI;
 public class SystemModule implements LuaLibrary {
 
     @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
+    public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
 
         // Functions
@@ -66,7 +66,7 @@ public class SystemModule implements LuaLibrary {
     private static final class GetClipboardText extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(ClipboardUtil.getContents().orElse(""));
         }
 
@@ -75,7 +75,7 @@ public class SystemModule implements LuaLibrary {
     private static final class GetOS extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(OperatingSystem.getOs().getLoveName());
         }
 
@@ -84,7 +84,7 @@ public class SystemModule implements LuaLibrary {
     private static final class GetProcessorCount extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(Runtime.getRuntime().availableProcessors());
         }
 
@@ -93,7 +93,7 @@ public class SystemModule implements LuaLibrary {
     private static final class OpenURL extends OneArgFunction {
 
         @Override
-        public LuaValue call(LuaState state, LuaValue arg) throws LuaError {
+        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
             final String url = arg.checkString();
             try {
                 if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
@@ -110,7 +110,7 @@ public class SystemModule implements LuaLibrary {
     private static final class SetClipboardText extends OneArgFunction {
 
         @Override
-        public LuaValue call(LuaState state, LuaValue arg) throws LuaError {
+        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
             ClipboardUtil.setContents(arg.checkString());
             return Constants.NIL;
         }

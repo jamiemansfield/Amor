@@ -53,7 +53,7 @@ public class GraphicsModule implements LuaLibrary {
     private Color color = Color.BLACK;
 
     @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
+    public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
 
         // Functions
@@ -93,7 +93,7 @@ public class GraphicsModule implements LuaLibrary {
     private static final class GetWidth extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(Gdx.graphics.getWidth());
         }
 
@@ -102,7 +102,7 @@ public class GraphicsModule implements LuaLibrary {
     private static final class GetHeight extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(Gdx.graphics.getHeight());
         }
 
@@ -129,7 +129,7 @@ public class GraphicsModule implements LuaLibrary {
             final int x = args.exists(2) ? args.arg(2).checkInteger() : 0;
             final int y = args.exists(3) ? args.arg(3).checkInteger() : 0;
 
-            return drawable.rawget("_draw").checkFunction()
+            return drawable.get(state, "_draw").checkFunction()
                     .call(state, ValueFactory.valueOf(x), ValueFactory.valueOf(y));
         }
 

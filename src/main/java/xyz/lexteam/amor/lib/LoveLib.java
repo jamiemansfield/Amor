@@ -41,10 +41,10 @@ import xyz.lexteam.amor.util.OperatingSystem;
  */
 public class LoveLib implements LuaLibrary {
 
-    private static final int    MAJOR    = 0;
-    private static final int    MINOR    = 10;
-    private static final int    REVISION = 2;
-    private static final String CODENAME = "Blue Banana";
+    private static final int    MAJOR    = 11;
+    private static final int    MINOR    = 1;
+    private static final int    REVISION = 0;
+    private static final String CODENAME = "Mysterious Mysteries";
 
     private final LuaTable conf;
 
@@ -53,7 +53,7 @@ public class LoveLib implements LuaLibrary {
     }
 
     @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
+    public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
 
         // Variables
@@ -88,7 +88,7 @@ public class LoveLib implements LuaLibrary {
     private static final class GetVersion extends VarArgFunction {
 
         @Override
-        public Varargs invoke(LuaState state, Varargs args) throws LuaError {
+        public Varargs invoke(final LuaState state, final Varargs args) throws LuaError {
             return ValueFactory.varargsOf(
                     ValueFactory.valueOf(MAJOR), ValueFactory.valueOf(MINOR), ValueFactory.valueOf(REVISION),
                     ValueFactory.valueOf(CODENAME)

@@ -42,7 +42,7 @@ import xyz.lexteam.amor.keyboard.Keys;
 public class KeyboardModule implements LuaLibrary {
 
     @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
+    public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
 
         // Functions

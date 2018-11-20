@@ -53,7 +53,7 @@ public class AudioModule implements LuaLibrary {
     private static final class NewSource extends TwoArgFunction {
 
         @Override
-        public LuaValue call(LuaState state, LuaValue arg1, LuaValue arg2) throws LuaError {
+        public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2) throws LuaError {
             final SourceType type = SourceType.from(arg2.checkString());
             return type.create(arg1.checkString()).createTable();
         }

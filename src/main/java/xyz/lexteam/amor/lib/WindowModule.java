@@ -43,7 +43,7 @@ import org.squiddev.cobalt.lib.LuaLibrary;
 public class WindowModule implements LuaLibrary {
 
     @Override
-    public LuaValue add(LuaState state, LuaTable environment) {
+    public LuaValue add(final LuaState state, final LuaTable environment) {
         final LuaTable table = new LuaTable();
 
         // Functions
@@ -59,7 +59,7 @@ public class WindowModule implements LuaLibrary {
     private static final class GetHeight extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(Gdx.graphics.getHeight());
         }
 
@@ -68,7 +68,7 @@ public class WindowModule implements LuaLibrary {
     private static final class GetTitle extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             // TODO: Implement
             return Constants.NIL;
         }
@@ -78,7 +78,7 @@ public class WindowModule implements LuaLibrary {
     private static final class GetWidth extends ZeroArgFunction {
 
         @Override
-        public LuaValue call(LuaState state) throws LuaError {
+        public LuaValue call(final LuaState state) throws LuaError {
             return ValueFactory.valueOf(Gdx.graphics.getWidth());
         }
 
@@ -87,7 +87,7 @@ public class WindowModule implements LuaLibrary {
     private static final class SetTitle extends OneArgFunction {
 
         @Override
-        public LuaValue call(LuaState state, LuaValue arg) throws LuaError {
+        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
             Gdx.graphics.setTitle(arg.checkString());
             return Constants.NIL;
         }
