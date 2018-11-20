@@ -46,8 +46,8 @@ public class StreamAudioSource extends AudioSource {
     }
 
     @Override
-    public boolean isStopped() {
-        return !this.music.isPlaying();
+    public boolean isPlaying() {
+        return this.music.isPlaying();
     }
 
 }

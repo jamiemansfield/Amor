@@ -112,7 +112,7 @@ public class GraphicsModule implements LuaLibrary {
 
         @Override
         public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
-            Gdx.gl.glClearColor((float) arg1.checkDouble() / 255f, (float) arg2.checkDouble() / 255f, (float) arg3.checkDouble() / 255f, 1);
+            Gdx.gl.glClearColor((float) arg1.checkDouble(), (float) arg2.checkDouble(), (float) arg3.checkDouble(), 1);
             return Constants.NIL;
         }
 
@@ -133,7 +133,8 @@ public class GraphicsModule implements LuaLibrary {
         @Override
         public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
             AmorGame.FONT.setColor(GraphicsModule.this.color);
-            AmorGame.FONT.draw(AmorGame.BATCH, arg1.checkString(), arg2.checkInteger(), arg3.checkInteger());
+            AmorGame.FONT.draw(AmorGame.BATCH, arg1.checkString(), arg2.checkInteger(),
+                    Gdx.graphics.getHeight() - arg3.checkInteger());
             return Constants.NIL;
         }
 
@@ -143,7 +144,7 @@ public class GraphicsModule implements LuaLibrary {
 
         @Override
         public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
-            GraphicsModule.this.color = new Color(arg1.checkInteger(), arg2.checkInteger(), arg3.checkInteger(), 1);
+            GraphicsModule.this.color = new Color((float) arg1.checkDouble(), (float) arg2.checkDouble(), (float) arg3.checkDouble(), 1);
             return Constants.NIL;
         }
 
@@ -162,7 +163,7 @@ public class GraphicsModule implements LuaLibrary {
             pixmap.setColor(GraphicsModule.this.color);
             pixmap.fillCircle(radius, radius, radius);
 
-            AmorGame.BATCH.draw(new Texture(pixmap), x, y);
+            AmorGame.BATCH.draw(new Texture(pixmap), x, Gdx.graphics.getHeight() - y);
             return Constants.NIL;
         }
 

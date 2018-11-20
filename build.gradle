@@ -17,7 +17,7 @@ group = 'xyz.lexteam'
 version = '0.0.1-indev'
 
 ext {
-    gdxVersion = '1.9.2'
+    gdxVersion = '1.9.9'
 }
 
 repositories {
@@ -32,9 +32,9 @@ dependencies {
     // Generic
     compile 'com.google.guava:guava:22.0'
     // Game Engine
-    compile 'org.squiddev:Cobalt:0.2.4'
+    compile 'org.squiddev:Cobalt:0.3.2'
     compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-    compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
 }
 

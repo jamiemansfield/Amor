@@ -46,7 +46,7 @@ public class StaticAudioSource extends AudioSource {
     }
 
     @Override
-    public boolean isStopped() {
+    public boolean isPlaying() {
         // TODO: ?
         return true;
     }

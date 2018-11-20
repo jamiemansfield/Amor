@@ -27,8 +27,8 @@ package xyz.lexteam.amor;
 
 import static com.google.common.io.Resources.getResource;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
-import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import org.squiddev.cobalt.LuaError;
 import org.squiddev.cobalt.LuaState;
 import org.squiddev.cobalt.LuaTable;
@@ -109,13 +109,14 @@ public final class AmorMain {
 
         // - Phase 3: Setup game container
         try {
-            final LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-            config.title = conf.get(gameState, "window").get(gameState, "title").checkString();
-            config.width = conf.get(gameState, "window").get(gameState, "width").checkInteger();
-            config.height = conf.get(gameState, "window").get(gameState, "height").checkInteger();
-            config.fullscreen = conf.get(gameState, "window").get(gameState, "fullscreen").checkBoolean();
-            config.resizable = conf.get(gameState, "window").get(gameState, "resizable").checkBoolean();
-            new LwjglApplication(new AmorGame(gameState, gameGlobals, conf), config);
+            final Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
+            config.setTitle(conf.get(gameState, "window").get(gameState, "title").checkString());
+            config.setWindowedMode(
+                    conf.get(gameState, "window").get(gameState, "width").checkInteger(),
+                    conf.get(gameState, "window").get(gameState, "height").checkInteger()
+            );
+            config.setResizable(conf.get(gameState, "window").get(gameState, "resizable").checkBoolean());
+            new Lwjgl3Application(new AmorGame(gameState, gameGlobals, conf), config);
         }
         catch (LuaError luaError) {
             luaError.printStackTrace();
