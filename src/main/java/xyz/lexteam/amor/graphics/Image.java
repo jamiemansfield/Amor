@@ -61,7 +61,11 @@ public class Image {
 
         @Override
         public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2) throws LuaError {
-            AmorGame.BATCH.draw(Image.this.texture, arg1.checkInteger(), arg2.checkInteger());
+            AmorGame.BATCH.draw(
+                    Image.this.texture,
+                    arg1.checkInteger(),
+                    Gdx.graphics.getHeight() - Image.this.texture.getHeight() - arg2.checkInteger()
+            );
             return Constants.NIL;
         }
 

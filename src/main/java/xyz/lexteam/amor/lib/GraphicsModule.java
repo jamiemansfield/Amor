@@ -118,12 +118,19 @@ public class GraphicsModule implements LuaLibrary {
 
     }
 
-    private static class Draw extends OneArgFunction {
+    private static class Draw extends VarArgFunction {
 
         @Override
-        public LuaValue call(final LuaState state, final LuaValue arg) throws LuaError {
-            return arg.checkTable().rawget("_draw").checkFunction()
-                    .call(state, ValueFactory.valueOf(0), ValueFactory.valueOf(0));
+        public Varargs invoke(final LuaState state, final Varargs args) throws LuaError {
+            if (args.count() < 1) {
+                throw new LuaError("Invalid arguments supplied to love.graphics.draw!");
+            }
+            final LuaTable drawable = args.arg(1).checkTable();
+            final int x = args.exists(2) ? args.arg(2).checkInteger() : 0;
+            final int y = args.exists(3) ? args.arg(3).checkInteger() : 0;
+
+            return drawable.rawget("_draw").checkFunction()
+                    .call(state, ValueFactory.valueOf(x), ValueFactory.valueOf(y));
         }
 
     }
@@ -134,7 +141,7 @@ public class GraphicsModule implements LuaLibrary {
         public LuaValue call(final LuaState state, final LuaValue arg1, final LuaValue arg2, final LuaValue arg3) throws LuaError {
             AmorGame.FONT.setColor(GraphicsModule.this.color);
             AmorGame.FONT.draw(AmorGame.BATCH, arg1.checkString(), arg2.checkInteger(),
-                    Gdx.graphics.getHeight() - arg3.checkInteger());
+                    Gdx.graphics.getHeight() - AmorGame.FONT.getAscent() - arg3.checkInteger());
             return Constants.NIL;
         }
 
@@ -163,7 +170,7 @@ public class GraphicsModule implements LuaLibrary {
             pixmap.setColor(GraphicsModule.this.color);
             pixmap.fillCircle(radius, radius, radius);
 
-            AmorGame.BATCH.draw(new Texture(pixmap), x, Gdx.graphics.getHeight() - y);
+            AmorGame.BATCH.draw(new Texture(pixmap), x, Gdx.graphics.getHeight() - diameter - y);
             return Constants.NIL;
         }
 
