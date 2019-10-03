@@ -13,7 +13,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
-group = 'xyz.lexteam'
+group = 'me.jamiemansfield'
 version = '0.0.1-indev'
 
 ext {
@@ -60,8 +60,4 @@ jar {
 
 shadowJar {
     classifier = ''
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.0.1'
 }
